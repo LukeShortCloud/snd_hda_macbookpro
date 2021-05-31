@@ -20,4 +20,4 @@ clean:
 
 install:
 	cp snd-hda-codec-cirrus.ko $(KDIR)/updates
-	depmod -a
+	depmod -a $(KVER)

@@ -1,6 +1,10 @@
-#!/bin/bash
+#!/bin/zsh
 
 # NOTA BENE - this script should be run as root
+
+# Fake the output of `uname` so the script will work in an Arch Linux chroot.
+# This assumes that only one 'linux*-headers' package is installed.
+uname() {if [[ "$1" == "-r" ]]; then echo $(ls -1 /usr/lib/modules/ | grep -P "^[0-9]+"); fi}
 
 kernel_version=$(uname -r | cut -d '-' -f1)  #ie 5.2.7
 major_version=$(echo $kernel_version | cut -d '.' -f1)
@@ -14,7 +18,7 @@ revpart3=$(echo $revision | cut -d '-' -f3)
 
 build_dir='build'
 update_dir="/lib/modules/$(uname -r)/updates"
-patch_dir='patch_cirrus'
+patch_dir='snd_hda_macbookpro/patch_cirrus'
 hda_dir="$build_dir/hda-$kernel_version"
 
 [[ ! -d $update_dir ]] && mkdir $update_dir
@@ -114,9 +118,9 @@ fi
 
 cd $hda_dir
 
-make
+KVER="$(uname -r)" make
 
-make install
+KVER="$(uname -r)" make install
 
 echo -e "\ncontents of $update_dir"
 ls -lA $update_dir
